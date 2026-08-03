@@ -564,6 +564,46 @@
   // ============================================================
   var GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxUEDTvaurOtcoNTHhD4PhkTc-n-zWHdUqg7swLeuSS2Ers6MKwIjh0XDBCFEZZ7szr/exec";
 
+  // ============================================================
+  // Analytics: gathers IP / rough location / device info once,
+  // reused for both the silent visit log and RSVP submissions.
+  // ============================================================
+  var analyticsCache = null;
+  async function collectAnalytics(){
+    if(analyticsCache) return analyticsCache;
+    var data = {
+      ip:'', city:'', region:'', country:'',
+      userAgent: navigator.userAgent || '',
+      language: navigator.language || '',
+      referrer: document.referrer || '(direct)',
+      screen: window.screen ? (window.screen.width + 'x' + window.screen.height) : '',
+      timezone: (Intl.DateTimeFormat().resolvedOptions().timeZone) || ''
+    };
+    try{
+      var res = await fetch('https://ipapi.co/json/');
+      var geo = await res.json();
+      data.ip = geo.ip || '';
+      data.city = geo.city || '';
+      data.region = geo.region || '';
+      data.country = geo.country_name || '';
+    }catch(err){ /* geolocation lookup failed — keep blanks, rest of analytics still saved */ }
+    analyticsCache = data;
+    return data;
+  }
+
+  async function saveVisit(){
+    if(!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.indexOf('PASTE_') === 0) return;
+    try{
+      var a = await collectAnalytics();
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method:'POST',
+        headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body: JSON.stringify(Object.assign({type:'visit', time:Date.now()}, a))
+      });
+    }catch(err){ /* silent — a failed visit log should never affect the page */ }
+  }
+  saveVisit();
+
   function goldBurst(x, y, count){
     count = count || 18;
     for(var i=0;i<count;i++){
@@ -691,15 +731,17 @@
   var form = document.getElementById('rsvpForm');
   var success = document.getElementById('rsvpSuccess');
   var rsvpCard = document.getElementById('rsvpCard');
-  form.addEventListener('submit', function(e){
+  form.addEventListener('submit', async function(e){
     e.preventDefault();
-    var entry = {
+    var a = await collectAnalytics();
+    var entry = Object.assign({
+      type:'rsvp',
       name: document.getElementById('rname').value.trim(),
       email: document.getElementById('remail').value.trim(),
       attending: document.getElementById('rattend').value,
       message: document.getElementById('rmsg').value.trim(),
       time: Date.now()
-    };
+    }, a);
     var btn = form.querySelector('.rsvp-btn');
     btn.disabled = true; btn.textContent = 'Sending...';
     saveRSVP(entry).then(function(ok){
@@ -766,6 +808,7 @@
     try{
       var res = await fetch(GOOGLE_SCRIPT_URL);
       var entries = await res.json();
+      entries = entries.filter(function(en){ return en.type === 'rsvp' || en.attending; });
       if(!entries || entries.length === 0){
         guestbookBox.innerHTML = '<div class="gb-empty">No wishes yet — be the first to write one! ♥</div>';
         return;
