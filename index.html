@@ -298,17 +298,6 @@
   .rsvp-success{display:none; text-align:center; padding:26px; border:1px solid var(--gold); border-radius:10px; background:var(--blush2); font-family:'Cormorant Garamond',serif; font-size:19px; color:var(--rose-deep);}
   .rsvp-success.show{display:block; animation:revealPop 0.6s ease;}
   .rsvp-note{text-align:center; font-size:11.5px; color:var(--ink-soft); margin-top:22px; line-height:1.6;}
-  .guestbook-toggle{display:block; margin:16px auto 0; background:none; border:1px solid var(--rose); color:var(--rose-deep); border-radius:999px; padding:9px 22px; font-size:12px; letter-spacing:0.5px; cursor:pointer; transition:background 0.3s, color 0.3s;}
-  .guestbook-toggle:hover{background:var(--blush2);}
-  .guestbook{display:none; margin-top:22px; max-height:320px; overflow-y:auto; text-align:left;}
-  .guestbook.show{display:block;}
-  .guestbook .gb-empty, .guestbook .gb-loading{text-align:center; font-size:13px; color:var(--ink-soft); padding:14px 0;}
-  .gb-entry{border-bottom:1px dashed rgba(201,116,141,0.35); padding:14px 4px;}
-  .gb-entry:last-child{border-bottom:none;}
-  .gb-row{display:flex; justify-content:space-between; align-items:baseline; gap:10px;}
-  .gb-name{font-family:'Cormorant Garamond', serif; font-size:17px; color:var(--maroon); font-weight:600;}
-  .gb-attend{font-size:11px; letter-spacing:0.5px; color:var(--rose-deep); white-space:nowrap;}
-  .gb-msg{font-size:13px; color:var(--ink); margin-top:4px; font-style:italic; font-family:'Cormorant Garamond', serif;}
 
   footer{text-align:center; padding:70px 20px 50px; position:relative; z-index:3;}
   .footer-motif{width:26px; height:26px; margin:0 auto 14px; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40' fill='none' stroke='%238a3450' stroke-width='1.6'%3E%3Cpath d='M20 6c8 0 12 6 12 13 0 8-6 13-13 13-5 0-8-3-8-7 0-3 2-5 5-5 2 0 4 1.5 4 4'/%3E%3Ccircle cx='20' cy='10' r='1.6' fill='%238a3450' stroke='none'/%3E%3C/svg%3E"); background-size:contain; background-repeat:no-repeat;}
@@ -543,9 +532,7 @@
       <button type="submit" class="rsvp-btn">Send Message</button>
     </form>
     <div class="rsvp-success" id="rsvpSuccess">Jazak Allah Khair! Your wishes have been received with love. 💌</div>
-    <div class="rsvp-note">Your message is saved so Sabiha &amp; Rashad can read it — anyone with this invitation link can also see the guestbook below.</div>
-    <button type="button" class="guestbook-toggle" id="guestbookToggle">View Guestbook</button>
-    <div class="guestbook" id="guestbook"></div>
+    <div class="rsvp-note">Your message is saved so Sabiha &amp; Rashad can read it.</div>
   </div>
 </section>
 
@@ -786,48 +773,6 @@
     }catch(err){
       console.error('RSVP save failed:', err);
       return false;
-    }
-  }
-
-  var attendLabels = {yes:'Joyfully Yes', no:"Can't Make It", maybe:'Still Deciding'};
-  var guestbookBtn = document.getElementById('guestbookToggle');
-  var guestbookBox = document.getElementById('guestbook');
-  guestbookBtn.addEventListener('click', async function(){
-    var opening = !guestbookBox.classList.contains('show');
-    guestbookBox.classList.toggle('show');
-    guestbookBtn.textContent = guestbookBox.classList.contains('show') ? 'Hide Guestbook' : 'View Guestbook';
-    if(opening) await loadGuestbook();
-  });
-
-  async function loadGuestbook(){
-    guestbookBox.innerHTML = '<div class="gb-loading">Loading wishes...</div>';
-    if(!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.indexOf('PASTE_') === 0){
-      guestbookBox.innerHTML = '<div class="gb-empty">Guestbook isn\'t connected yet.</div>';
-      return;
-    }
-    try{
-      var res = await fetch(GOOGLE_SCRIPT_URL);
-      var entries = await res.json();
-      entries = entries.filter(function(en){ return en.type === 'rsvp' || en.attending; });
-      if(!entries || entries.length === 0){
-        guestbookBox.innerHTML = '<div class="gb-empty">No wishes yet — be the first to write one! ♥</div>';
-        return;
-      }
-      entries.sort(function(a,b){ return new Date(b.time) - new Date(a.time); });
-      guestbookBox.innerHTML = '';
-      entries.forEach(function(en){
-        var div = document.createElement('div');
-        div.className = 'gb-entry';
-        var nm = (en.name || 'A guest').replace(/</g,'&lt;');
-        var msg = (en.message || '').replace(/</g,'&lt;');
-        var att = attendLabels[en.attending] || en.attending || '';
-        div.innerHTML = '<div class="gb-row"><span class="gb-name">' + nm + '</span><span class="gb-attend">' + att + '</span></div>' +
-          (msg ? '<div class="gb-msg">"' + msg + '"</div>' : '');
-        guestbookBox.appendChild(div);
-      });
-    }catch(err){
-      console.error('Guestbook load failed:', err);
-      guestbookBox.innerHTML = '<div class="gb-empty">Couldn\'t load the guestbook right now.</div>';
     }
   }
 
