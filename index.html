@@ -178,9 +178,10 @@
   .hero-content{position:relative; z-index:4; padding:120px 24px 70px; max-width:640px;}
   .hero-mark{font-size:22px; color:var(--gold-light); margin-bottom:14px;}
   .hero-welcome{font-size:clamp(15px,2.2vw,18px); color:#fdf3ee; letter-spacing:0.5px; line-height:1.7; margin-bottom:18px; font-family:'Cormorant Garamond',serif; font-style:italic;}
-  .hero-names{display:flex; flex-direction:column; align-items:center; gap:2px; margin:6px 0 10px;}
+  .hero-names{display:flex; flex-direction:column; align-items:center; gap:0; margin:6px 0 10px;}
   .hero-name{
-    font-family:'Mrs Saint Delafield', cursive; font-size:clamp(58px,11vw,104px); line-height:1;
+    font-family:'Mrs Saint Delafield', cursive; font-size:clamp(58px,11vw,104px); line-height:1.5;
+    padding:0 14px; overflow:visible;
     background:linear-gradient(120deg, #fff8f0 0%, #fff8f0 42%, var(--gold-light) 50%, #fff8f0 58%, #fff8f0 100%);
     background-size:320% 100%; -webkit-background-clip:text; background-clip:text; color:transparent;
     animation:nameShimmer 7s ease-in-out infinite;
@@ -447,9 +448,9 @@
         </svg>
       </div>
       <div class="tl-body">
-        <h4>Mehendi &amp; Sangeet</h4>
+        <h4>Mehendi</h4>
         <div class="tl-when">18th September 2026, 4:00 PM · Balmy BNB <a class="tl-dir" href="https://www.google.com/maps/search/?api=1&query=Balmy+BNB" target="_blank" rel="noopener">📍 Directions</a></div>
-        <div class="tl-note">Henna, music and dance to welcome the celebrations.</div>
+        <div class="tl-note">Mehfil-e-mehendi to welcome the celebration.</div>
       </div>
     </div>
     <div class="tl-row reveal">
@@ -458,7 +459,7 @@
       </div>
       <div class="tl-body">
         <h4>Nikah Ceremony</h4>
-        <div class="tl-when">19th September 2026, 2:00 PM · Rajwada Banquet &amp; Lawn, Kolkata <a class="tl-dir" href="https://www.google.com/maps/search/?api=1&query=Rajwada+Banquet+%26+Lawn+Kolkata" target="_blank" rel="noopener">📍 Directions</a></div>
+        <div class="tl-when">19th September 2026, 1:00 PM · Rajwada Banquet &amp; Lawn, Kolkata <a class="tl-dir" href="https://www.google.com/maps/search/?api=1&query=Rajwada+Banquet+%26+Lawn+Kolkata" target="_blank" rel="noopener">📍 Directions</a></div>
         <div class="tl-note">The sacred vows that unite Sabiha &amp; Rashad forever.</div>
       </div>
     </div>
@@ -561,7 +562,7 @@
   // between the quotes below. See the setup guide provided
   // alongside this file for exact instructions.
   // ============================================================
-  var GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxUEDTvaurOtcoNTHhD4PhkTc-n-zWHdUqg7swLeuSS2Ers6MKwIjh0XDBCFEZZ7szr/exec";
+  var GOOGLE_SCRIPT_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
 
   function goldBurst(x, y, count){
     count = count || 18;
